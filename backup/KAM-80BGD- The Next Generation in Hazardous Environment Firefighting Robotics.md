@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Blog Title</title><link>https://kapmif.github.io/CrisisTech-OSS</link><description>Blog description</description><copyright>Blog Title</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://kapmif.github.io/CrisisTech-OSS</link></image><lastBuildDate>Tue, 11 Mar 2025 02:24:18 +0000</lastBuildDate><managingEditor>Blog Title</managingEditor><ttl>60</ttl><webMaster>Blog Title</webMaster><item><title>KAM-80BGD: The Next Generation in Hazardous Environment Firefighting Robotics</title><link>https://kapmif.github.io/CrisisTech-OSS/post/KAM-80BGD-%20The%20Next%20Generation%20in%20Hazardous%20Environment%20Firefighting%20Robotics.html</link><description>*Revolutionizing Chemical Spill Response and Industrial Fire Suppression*
+*Revolutionizing Chemical Spill Response and Industrial Fire Suppression*
 ![KAM-80BGD deploying dual suppression nozzles in a simulated petrochemical fire](https://kapm.us.kg/133216.jpg)
 
 In high-risk environments where flammable chemicals and extreme heat intersect, the KAM-80BGD explosion-proof firefighting robot redefines frontline emergency response. Designed specifically for petroleum, chemical, and industrial disaster scenarios, this robotic system combines military-grade protection with precision decontamination capabilities.
@@ -29,7 +28,7 @@ The operational sequence includes four critical phases:
 ## Technical Specifications
 
 ### Mobility Performance
-- Vertical obstacle clearance: 602mm (23.7') - climbs stacked chemical drums
+- Vertical obstacle clearance: 602mm (23.7") - climbs stacked chemical drums
 - Gradeability: 84.1% slope navigation - handles refinery pipe racks
 - Reverse speed: 1.61 m/s (3.6 mph) emergency retreat capability
 
@@ -66,8 +65,8 @@ The system meets rigorous global standards:
 
 ---
 
-&gt; 'During the 2023 Shanghai Petrochemical drill, our KAM unit reduced entry team exposure by 92% while containing a simulated acrylonitrile leak 37% faster than manual protocols.'
-&gt; *- Li Wei, Chief Safety Officer, Sinopec Group*
+> "During the 2023 Shanghai Petrochemical drill, our KAM unit reduced entry team exposure by 92% while containing a simulated acrylonitrile leak 37% faster than manual protocols."
+> *- Li Wei, Chief Safety Officer, Sinopec Group*
 
 ---
 
@@ -77,4 +76,3 @@ The system meets rigorous global standards:
 - Hydrogen fluoride neutralization package (2026 Q1)
 
 *Protect your team with autonomous chemical response technology - [Contact Safety Engineers](tel:+1(650)646-5199) | [Request Live Demo](info@kapm.us.kg)*
-。</description><guid isPermaLink="true">https://kapmif.github.io/CrisisTech-OSS/post/KAM-80BGD-%20The%20Next%20Generation%20in%20Hazardous%20Environment%20Firefighting%20Robotics.html</guid><pubDate>Tue, 11 Mar 2025 02:23:49 +0000</pubDate></item></channel></rss>

@@ -12,7 +12,7 @@ cover_asset: "https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/7145552.jpg"
 
 In high-risk facilities where radioactive iodine threatens operational safety, our **3rd-Gen Autonomous Iodine Adsorption System** redefines contamination control through 5 years of R&D and field validation.
 
-![System Schematic Diagram](https://pub-dfc21f91726c47c6a21daacdb34fec92.r2.dev/system-schematic-v3.png)  
+![System Schematic Diagram](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/7145552.jpg)  
 *Embedded diagram appears in Appendix A*
 
 ## Core Innovations

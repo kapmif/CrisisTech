@@ -60,7 +60,7 @@ The CST-600 is a smart conveyor radiation monitoring system, endorsed by the IAE
 
 ## Get Started
 
-- [Download Whitepaper](#)  
+- [Download Whitepaper](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/CST-400%20Conveyor%20Radiation%20Monitoring%20System%20Whitepaper.pdf)  
 - [Schedule Demo](#)  
 - [Configure Online](https://example.com/csfs600-config)  
 

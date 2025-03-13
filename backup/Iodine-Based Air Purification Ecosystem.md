@@ -1,5 +1,5 @@
 # Iodine-Enhanced Air Purification System  
-![Nuclear-grade Filtration Infrastructure](https://kapm.us.kg/095043.jpg)  
+![Nuclear-grade Filtration Infrastructure](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/095043.jpg)  
 
 **Radiation Neutralization Matrix**  
 ▸ 99.7% I-131 capture efficiency @ 200Pa differential  
@@ -13,7 +13,7 @@
 | Medical HVAC Cartridges| 850+ global caches  | Climate-controlled transport |  
 | Residential Refill Packs | 34 metro hubs     | Drone-accessible deployment |  
 
-![Smart Home Air Quality Monitoring](https://kapm.us.kg/095100.jpg)  
+![Smart Home Air Quality Monitoring](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/095100.jpg)  
 **Intelligent Consumable Management**  
 ✔️ RFID expiration alerts (ISO/IEC 18000-63 certified)  
 ✔️ 14-day predictive failure analytics  

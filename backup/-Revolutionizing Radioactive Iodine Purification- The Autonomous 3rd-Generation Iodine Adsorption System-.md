@@ -7,7 +7,7 @@ cover_asset: "https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/7145552.jpg"
 
 # The Silent Guardian in Radioactive Environments
 
-![Cover Image](https://pub-dfc21f91726c47c6a21daacdb34fec92.r2.dev/307145250.jpg)  
+![Cover Image](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/307145250.jpg)  
 *Cover image showing the 3rd-Gen Autonomous Iodine Adsorption System*
 
 In high-risk facilities where radioactive iodine threatens operational safety, our **3rd-Gen Autonomous Iodine Adsorption System** redefines contamination control through 5 years of R&D and field validation.

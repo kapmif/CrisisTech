@@ -1,19 +1,13 @@
 categories:  
   - Nuclear Safety  
   - Engineering Innovation  
-cover: "https://kapm.us.kg/307145250.jpg"
+cover: "https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/307145250.jpg"
 ---
 
 **The Silent Guardian in Radioactive Environments**  
 In high-risk facilities where radioactive iodine threatens both operational safety and human health, our newly developed **3rd-Generation Autonomous Iodine Adsorption System** emerges as a game-changing solution. Backed by 5 years of R&D and field validation data, this 5-ton engineering marvel redefines contamination control.
 
-<div class="image-zoom" style="max-width:800px;margin:2rem auto;position:relative">
-  <img src="https://kapm.us.kg/307145250.jpg" 
-       alt="第三代碘吸附系统核心模块 - 展示304不锈钢密封结构"
-       loading="lazy"
-       decoding="async"
-       style="border: 3px solid #4CAF50; border-radius: 8px;">
-</div>
+
 
 ### Core Innovations  
 #### ❶ **Human-Zero Intervention Architecture**  

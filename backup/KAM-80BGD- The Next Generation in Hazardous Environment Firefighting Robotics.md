@@ -1,5 +1,5 @@
 *Revolutionizing Chemical Spill Response and Industrial Fire Suppression*
-![KAM-80BGD deploying dual suppression nozzles in a simulated petrochemical fire](https://kapm.us.kg/133216.jpg)
+![KAM-80BGD deploying dual suppression nozzles in a simulated petrochemical fire](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/133216.jpg)
 
 In high-risk environments where flammable chemicals and extreme heat intersect, the KAM-80BGD explosion-proof firefighting robot redefines frontline emergency response. Designed specifically for petroleum, chemical, and industrial disaster scenarios, this robotic system combines military-grade protection with precision decontamination capabilities.
 
@@ -39,7 +39,7 @@ The stainless steel turret delivers:
 - Nozzle articulation ranges from -18° depression to +90° elevation
 
 ### Environmental Endurance
-![Infrared visualization showing 600°C thermal protection](https://kapm.us.kg/3092.png)
+![Infrared visualization showing 600°C thermal protection](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/9131758.png)
 - Operates continuously for 16 hours in IP67-rated conditions
 - Withstands 600°C radiant heat for 15-minute intervals
 - Cold-start capable at -40°C for arctic operations

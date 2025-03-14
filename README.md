@@ -4,9 +4,7 @@
 ### :alarm_clock: 2025-03-14 10:46:38 
 
 
-# AeroHorizon Dynamics
 
-**Open Engineering for Planetary Health**
 
 ---
 

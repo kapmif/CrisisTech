@@ -13,7 +13,7 @@ tags:
 
 # Introducing the XM1577 "CleanSweep" - The Future of CBRN Firefighting
 
-![XM1577 CleanSweep](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/XM1577.jpg)  
+![XM1577 CleanSweep](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/xm1577-3.JPG)  
 *The XM1577 in action, tackling high-risk fire zones.*
 
 As urban and industrial environments grow increasingly complex, the need for advanced firefighting and CBRN (Chemical, Biological, Radiological, Nuclear) response solutions has never been greater. Enter the **XM1577 "CleanSweep"**, an unmanned robotic platform designed to revolutionize how we combat fires and hazardous material incidents. Launched in March 2025, this beast of a machine combines cutting-edge robotics with intelligent systems to keep firefighters safe while tackling the toughest challenges.

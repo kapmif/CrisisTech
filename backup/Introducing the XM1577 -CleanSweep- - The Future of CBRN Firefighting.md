@@ -94,7 +94,7 @@ Plus, optional cloud integration means real-time data tracking and firmware upda
 ## Get Involved
 
 The XM1577 "CleanSweep" is still evolving—certifications are pending, and we’re exploring add-ons like voice control and infrared tracking. Want to learn more?  
-- **Docs**: Check the [full whitepaper](#) ([link TBD](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/XM1577.pdf)).  
+- **Docs**: Check the [full whitepaper](#) ([link TBD](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/XM1577%20.pdf)).  
 - **Feedback**: Drop us a comment or open an issue on this repo!  
 
 Stay tuned for updates as we roll out this beast to fire stations and industrial sites worldwide.

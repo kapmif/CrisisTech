@@ -1,96 +1,103 @@
 <!DOCTYPE html>
-<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN"
-      xmlns:nato="urn:nato:stanag-4774-2022"
-      xmlns:iaea="http://www.iaea.org/ns/html-ext">
+<html lang="en-US">
 <head>
-    <!-- 强化安全头部 -->
+    <!-- Security Headers -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self'; 
-                   script-src 'self' https://cdn.iaea.org 'sha256-n5x...';
-                   style-src 'self' https://mirrors.sustech.edu.cn;
-                   img-src 'self' https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev;
-                   connect-src 'self'">
+          content="default-src 'none;
+                   script-src 'self' 'sha256-n5x...' https://cdn.iaea.org;
+                   style-src 'self' 'sha384-OLBw1MZ4...' https://cdnjs.cloudflare.com;
+                   img-src 'self' data: https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev;
+                   font-src 'self' https://fonts.gstatic.com;
+                   connect-src 'self';
+                   frame-ancestors 'none';
+                   base-uri 'self';
+                   form-action 'none'">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Referrer-Policy" content="strict-origin">
-    
-    <!-- 核安全元数据 -->
-    <iaea:classification level="INFCIRC/912-4">
-        <nato:security>NATO RESTRICTED</nato:security>
-        <iaea:access-group>CT-OSS-114</iaea:access-group>
-    </iaea:classification>
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 
-    <!-- SRI完整性校验 -->
+    <!-- Preload Critical Resources -->
+    <link rel="preload" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/Primer/21.0.7/primer.css" 
+          as="style"
+          crossorigin="anonymous">
+    <link rel="preload" 
+          href="https://cdn.iaea.org/security/v4/nuclear-validator.js" 
+          as="script"
+          crossorigin="anonymous">
+
+    <!-- Security Metadata -->
+    <meta name="security-classification" content="CT-OSS-114">
+    <meta name="data-handling" content="NATO RESTRICTED">
+
+    <!-- Optimized Styles -->
     <link rel="stylesheet" 
-          href="https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/Primer/21.0.7/primer.css"
           integrity="sha384-OLBw1MZ4/70f6BZ6dY4..."
           crossorigin="anonymous">
 
-    <!-- 加密主题配置 -->
-    <script type="text/armored-javascript" nonce="a1b2c3d4">
-    const CRYPTO_CONFIG = {
-        keyDerivation: {
-            name: 'PBKDF2',
-            iterations: 200000,
-            hash: 'SHA-256'
-        },
-        encryption: {
-            name: 'AES-GCM',
-            length: 256
-        }
-    };
+    <!-- Theme Management -->
+    <script>
+    const THEME_KEY = 'secure_theme_config';
+    
+    async function initializeTheme() {
+        try {
+            const encryptedData = localStorage.getItem(THEME_KEY);
+            if (!encryptedData) return;
 
-    class SecureTheme {
-        constructor() {
-            this.cipher = new WebCryptoCipher(CRYPTO_CONFIG);
-        }
+            const { ciphertext, iv, tag } = JSON.parse(encryptedData);
+            const keyMaterial = await crypto.subtle.importKey(
+                "raw",
+                new TextEncoder().encode(process.env.THEME_SECRET), // Replace with actual key
+                { name: "AES-GCM" },
+                false,
+                ["decrypt"]
+            );
 
-        async initTheme() {
-            const storedTheme = localStorage.getItem('meek_theme_enc');
-            const iv = localStorage.getItem('meek_theme_iv');
-            const authTag = localStorage.getItem('meek_theme_tag');
+            const decrypted = await crypto.subtle.decrypt(
+                { name: "AES-GCM", iv: new Uint8Array(iv), tag: new Uint8Array(tag) },
+                keyMaterial,
+                new Uint8Array(ciphertext)
+            );
             
-            if (storedTheme && iv && authTag) {
-                try {
-                    const decrypted = await this.cipher.decrypt(storedTheme, iv, authTag);
-                    SecurityDOM.safeAttribute(document.documentElement, 'data-color-mode', decrypted);
-                } catch (e) {
-                    this.handleSecurityBreach();
-                }
-            }
-        }
-
-        handleSecurityBreach() {
-            SecurityDOM.wipeStorage();
-            window.location.replace('/security-breach.html');
+            document.documentElement.setAttribute('data-color-mode', 
+                new TextDecoder().decode(decrypted));
+        } catch (error) {
+            console.error('Theme initialization failed:', error);
+            localStorage.removeItem(THEME_KEY);
+            window.location.reload();
         }
     }
+    document.addEventListener('DOMContentLoaded', initializeTheme);
     </script>
 </head>
 
-<body security-level="IAEA-3">
-    <!-- 受控内容区 -->
-    <div id="header" class="nato-secure-header">
+<body>
+    <!-- Header Section -->
+    <header class="blog-header">
         <h1>
             <img src="https://avatars.githubusercontent.com/u/157085235?v=4" 
-                 class="avatar circle" 
-                 alt="avatar"
-                 data-armored="true">
-            <a class="blogTitle" data-encrypted="AES256:G5i9e...">Code vs. Climate Collapse</a>
+                 class="avatar circle"
+                 alt="Author Avatar"
+                 width="80"
+                 height="80"
+                 loading="lazy"
+                 decoding="async">
+            <span class="blog-title">Code vs. Climate Collapse</span>
         </h1>
-    </div>
+    </header>
 
-    <!-- 安全列表容器 -->
-    <nav class="SideNav border" data-armored="true">
-        <iaea:content-check sum="sha384-xyz...">
-        <!-- 动态加载安全内容 -->
-        </iaea:content-check>
+    <!-- Navigation -->
+    <nav class="sidebar-navigation" aria-label="Main navigation">
+        <!-- Dynamic content loader -->
     </nav>
 
-    <!-- 核安全脚本 -->
+    <!-- Security Validation -->
     <script src="https://cdn.iaea.org/security/v4/nuclear-validator.js"
             integrity="sha384-5ZwqK7..."
-            nonce="a1b2c3d4"
-            data-armored="true"></script>
+            crossorigin="anonymous"
+            async
+            defer></script>
 </body>
 </html>

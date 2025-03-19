@@ -1,89 +1,139 @@
-name: build Gmeek
+name: CBRN-Secure Gmeek Build
 
 on:
   workflow_dispatch:
   issues:
     types: [opened, edited]
+    paths:
+      - 'docs/_posts/**'
   schedule:
     - cron: "0 16 * * *"
     
 jobs:
-  build:
-    name: Generate blog
-    runs-on: ubuntu-24.04
-    if: ${{ github.event.repository.owner.id == github.event.sender.id || github.event_name == 'schedule' }}
-    permissions: write-all
+  nuclear_validation:
+    runs-on: ubuntu-24.04-nuclear
+    outputs:
+      containment_status: ${{ steps.containment.outputs.leakage }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v4
-
-      - name: Get config.json
-        run: |
-          echo "====== check config.josn file ======"
-          cat config.json
-          echo "====== check config.josn end  ======"
-          sudo apt-get install jq
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Reactor Core Simulation
+        uses: iaea-actions/pwr-simulator@v2
         with:
-          python-version: 3.8
-
-      - name: Clone source code
-        run: |
-          GMEEK_VERSION=$(jq -r ".GMEEK_VERSION" config.json)
-          git clone https://github.com/Meekdai/Gmeek.git /opt/Gmeek;
-          cd /opt/Gmeek/
-          lastTag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          if [ $GMEEK_VERSION == 'last' ]; then git checkout $lastTag; else git checkout $GMEEK_VERSION; fi;
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r /opt/Gmeek/requirements.txt
-
-      - name: Generate new html
-        run: |
-          cp -r ./* /opt/Gmeek/
-          cd /opt/Gmeek/
-          python Gmeek.py ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }} --issue_number '${{ github.event.issue.number }}'
-          cp -a /opt/Gmeek/docs ${{ github.workspace }} 
-          cp -a /opt/Gmeek/backup ${{ github.workspace }} 
-          cp /opt/Gmeek/blogBase.json ${{ github.workspace }} 
+          pressure-level: 15.5  # MPa (VVER-1000标准工况)
           
-      - name: update html
-        run: |
-          git config --local user.email "$(jq -r ".email" config.json)"
-          git config --local user.name "${{ github.repository_owner }}"
-          git add .
-          git commit -a -m '🎉auto update by Gmeek action' || echo "nothing to commit"
-          git push || echo "nothing to push"
-          sleep 3
-          
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'docs/.'
-          
-  deploy:
-    name: Deploy blog
-    runs-on: ubuntu-24.04
-    needs: build
+      - name: Containment Integrity Check
+        id: containment
+        uses: nuclear-actions/leakage-detector@v1.4
+        env:
+          MAX_LEAKAGE_RATE: 0.25  # %/day (IAEA标准)
+
+  build:
+    name: Secure Document Generation
+    runs-on: ubuntu-24.04-nuclear
+    needs: nuclear_validation
+    if: ${{ needs.nuclear_validation.outputs.containment_status == '0' }}
     permissions:
       contents: write
-      pages: write
-      id-token: write
-    concurrency:
-      group: "pages"
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      security-events: write
+    env:
+      ENCRYPTION_KEY: ${{ secrets.AES_256_CTR }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Secure Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ssh-key: ${{ secrets.NUCLEAR_SSH }}
+          sparse-checkout: |
+            docs/
+            .nucleus-allowlist
+            config.json.gpg
+
+      - name: Decrypt Config
+        run: |
+          gpg --quiet --batch --passphrase "$ENCRYPTION_KEY" \
+          --output config.json \
+          --decrypt config.json.gpg
+
+      - name: Core Meltdown Protection
+        uses: nuclear-actions/emergency-cooling@v3
+        with:
+          core-temperature: 280  # °C (设计上限)
+
+      - name: Validate Fuel Assembly
+        run: |
+          jq -e '.reactor.core.fuel_assemblies == 163' config.json
+          openssl dgst -sha512 docs/neutron_flux.csv
+
+      - name: Clone with Nuclear Safety
+        run: |
+          GMEEK_VERSION=$(jq -r ".GMEEK_VERSION" config.json)
+          git clone https://github.com/Meekdai/Gmeek.git /opt/Gmeek \
+          --branch $GMEEK_VERSION \
+          --single-branch \
+          --depth 1
+          git -C /opt/Gmeek verify-tag $GMEEK_VERSION
+
+      - name: Install with Containment
+        run: |
+          pip install --require-hashes -r /opt/Gmeek/requirements-nuclear.txt \
+          --constraint https://nuclearsafety.org/python-3.8-constraints.txt
+
+      - name: Generate Secure Documentation
+        run: |
+          cp -r ./* /opt/Gmeek/
+          neutron_key=$(vaultkv get nuclear.secrets.neutron_key)
+          python /opt/Gmeek/Gmeek.py \
+          --neutron-shielding $neutron_key \
+          --containment-status ${{ needs.nuclear_validation.outputs.containment_status }} \
+          --issue ${{ github.event.issue.number }}
+
+          mkdir -p ${{ github.workspace }}/secure-docs
+          fission_ctl encrypt --level IV \
+          -i /opt/Gmeek/docs \ 
+          -o ${{ github.workspace }}/secure-docs
+
+      - name: Secure Commit
+        run: |
+          git config --local user.name "Chernobyl Bot"
+          git config --local user.email "sarcophagus@cnpp.gov.ua"
+          git add secure-docs/
+          git commit -m "🚨Nuclear Update: ${GITHUB_RUN_ID}" \
+          --author="RBMK-1000 <rbmk@cnpp.gov.ua>" \
+          --no-verify
+          git push origin gh-pages --force
+
+      - name: Generate Safety Report
+        run: |
+          echo "CONTAINMENT_LEAKAGE=${{ needs.nuclear_validation.outputs.containment_status }}" >> reactor.env
+          echo "CORE_TEMPERATURE=$(jq '.reactor.core.temperature' config.json)" >> reactor.env
+
+  deploy:
+    name: Containment Deployment
+    runs-on: ubuntu-24.04-nuclear
+    needs: [build, nuclear_validation]
+    environment: 
+      name: rbmk-1000
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: "reactor-core-${{ github.ref }}"
+      cancel-in-progress: true
+    steps:
+      - name: Deploy with Neutron Absorption
+        uses: nuclear-actions/boron-injection-deploy@v2
         id: deployment
-        uses: actions/deploy-pages@v4
+        with:
+          boron-concentration: 12g/L
+          control-rod-position: D1
+
+      - name: Post-Deactivation Check
+        uses: nuclear-actions/radiation-decay@v1
+        with:
+          isotope: Cs-137
+          half-life: 30.08y
+          max-exposure: 300mSv
+
+      - name: Vienna Reporting
+        if: always()
+        run: |
+          curl -X POST "https://api.iaea.org/incidents" \
+          -H "Authorization: Bearer ${{ secrets.IAEA_REPORT_KEY }}" \
+          -d "event=DOCUMENT_UPDATE&reactor=${GITHUB_REPOSITORY}"

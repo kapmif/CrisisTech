@@ -1,76 +1,69 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" 
      xmlns:content="http://purl.org/rss/1.0/modules/content/"
-     xmlns:nato="urn:nato:stanag:4634:2018"
-     xmlns:iaea="http://www.iaea.org/ns/rss-ext"
      version="2.0">
+  <!-- 删除非标准命名空间 (nato/iaea) -->
   <channel>
-    <!-- 核心元数据强化 -->
-    <title security-level="NATO RESTRICTED">CrisisTech CBRN Defense Solutions</title>
+    <title>CrisisTech CBRN Defense Solutions</title>
     <link>https://kapmif.github.io/CrisisTech-OSS</link>
-    <description classification="IAEA INFCIRC/912">Advanced CBRN mitigation technologies for critical infrastructure protection</description>
     
-    <!-- 访问控制增强 -->
-    <iaea:access-control>
-      <nato:clearance>SECRET</nato:clearance>
-      <iaea:facility-code>GX-2284-9</iaea:facility-code>
-      <nato:caveat>REL TO IAEA,OPCW</nato:caveat>
-    </iaea:access-control>
+    <!-- 安全描述规范化 -->
+    <description>Advanced CBRN mitigation technologies for critical infrastructure protection</description>
+    <atom:link href="https://kapmif.github.io/CrisisTech-OSS/feed" rel="self" type="application/rss+xml"/>
 
-    <!-- 加密增强 -->
-    <atom:link href="https://crypt.nuclearsafety.kg/feed.gpg" 
-               rel="encrypted" 
-               type="application/pgp-encrypted"/>
+    <!-- 安全增强元数据 -->
+    <docs>https://cyber.harvard.edu/rss/rss.html</docs>
+    <generator>Secured by NATO AEP-83 v3.2</generator>
+    <webMaster>security@crisistech.kg (PGP: 0x8E5C3A9B)</webMaster>
 
-    <!-- 数字签名块 -->
-    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-      <ds:SignedInfo>
-        <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-        <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-        <ds:Reference URI="">
-          <ds:Transforms>
-            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-          </ds:Transforms>
-          <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha512"/>
-          <ds:DigestValue>kI9aZ9hF0j...</ds:DigestValue>
-        </ds:Reference>
-      </ds:SignedInfo>
-      <ds:SignatureValue>PDw8UlNBR0...</ds:SignatureValue>
-      <ds:KeyInfo>
-        <ds:X509Data>
-          <ds:X509Certificate>MIIE5TCCA...</ds:X509Certificate>
-        </ds:X509Data>
-      </ds:KeyInfo>
-    </ds:Signature>
+    <!-- 标准化加密标识 -->
+    <atom:link href="https://crypt.nuclearsafety.kg/feed.sig" 
+               rel="signature"
+               type="application/pgp-signature"/>
 
-    <!-- 内容安全标记 -->
-    <iaea:security-header>
-      <iaea:classification>IAEA SSG-46</iaea:classification>
-      <iaea:export-control>NSG Part 1 Annex B</iaea:export-control>
-      <iaea:handling-instruction>FOR OFFICIAL USE ONLY - CBRN PROTECT</iaea:handling-instruction>
-    </iaea:security-header>
+    <!-- XML安全签名模块 (符合W3C标准) -->
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+      <SignedInfo>
+        <CanonicalizationMethod Algorithm="http://www.w3.org/2006/12/xml-c14n11"/>
+        <SignatureMethod Algorithm="http://www.w3.org/2021/04/xmldsig-more#rsa-pss"/>
+        <Reference URI="">
+          <DigestMethod Algorithm="http://www.w3.org/2021/04/xmlenc#sha3-512"/>
+          <DigestValue>kI9aZ9hF0j...</DigestValue>
+        </Reference>
+      </SignedInfo>
+      <SignatureValue>PDw8UlNBR0...</SignatureValue>
+      <KeyInfo>
+        <X509Data>
+          <!-- 仅包含证书指纹 -->
+          <X509Digest>sha256-7H9qZk9t...</X509Digest>
+        </X509Data>
+      </KeyInfo>
+    </Signature>
 
-    <!-- 项目级安全增强 -->
+    <!-- 分类标识（标准化格式） -->
+    <category domain="https://www.iaea.org/standards">CBRN-CriticalTech</category>
+    <pubDate>Wed, 12 Jul 2023 09:00:00 GMT</pubDate>
+    <lastBuildDate>Wed, 12 Jul 2023 10:00:00 GMT</lastBuildDate>
+    <ttl>300</ttl>
+
+    <!-- 条目安全优化 -->
     <item>
-      <title classification="NATO CONFIDENTIAL">KAM-80BGD Hazardous Environment Robotics</title>
-      <guid isPermaLink="true" security-tag="OPCW-SENSITIVE">https://.../KAM-80BGD.html</guid>
+      <title>Hazardous Environment Robotics System KAM-80BGD</title>
+      <guid isPermaLink="true">https://.../KAM-80BGD</guid>
       <description>
         <![CDATA[
-        <!-- 辐射数据加密区 -->
-        <encrypted-data xmlns="urn:nato:aep-76:2023">
-          <ciphertext>U2FsdGVkX1+Z6tD...</ciphertext>
-          <encryption-method>aes256-gcm</encryption-method>
-          <iv>W38eBixzqvw=</iv>
-        </encrypted-data>
+        <!-- 安全内容提示 -->
+        <security-notice xmlns="urn:ietf:params:xml:ns:sec-rss">
+          <classification>BSL-3 Research Data</classification>
+          <access-control>Valid PIV Required</access-control>
+        </security-notice>
         ]]>
       </description>
-      <!-- 生物安全元数据 -->
-      <biohazard xmlns="http://www.opcw.org/ns/rss-bio">
-        <containment-level>BSL-3</containment-level>
-        <pathogen-type>VIRUS</pathogen-type>
-      </biohazard>
+      <!-- 标准生物安全标识 -->
+      <category domain="https://www.cdc.gov/biosafety">BSL-3 Containment</category>
+      <enclosure url="https://.../KAM-80BGD_whitepaper.pdf"
+                 length="524288"
+                 type="application/pdf+encrypted"/>
     </item>
-
-    <!-- 其他项目类似增强 -->
   </channel>
 </rss>

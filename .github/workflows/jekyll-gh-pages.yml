@@ -1,51 +1,102 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+name: CBRN-Secure Jekyll Deployment
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["gh-pages"]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [ "gh-pages" ]
+    paths:
+      - 'docs/_posts/*.md'
+      - 'assets/radiation_data/**'
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: "nuclear-pages-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
-  # Build job
-  build:
-    runs-on: ubuntu-latest
+  radiation_safety:
+    runs-on: ubuntu-24.04-nuclear
+    outputs:
+      dose_validation: ${{ steps.survey.outputs.dose_ok }}
     steps:
-      - name: Checkout
+      - name: Background Radiation Survey
+        uses: iaea-actions/geiger-counter-scan@v2
+        with:
+          max_microsievert: 300  # 切尔诺贝利禁区标准
+        id: survey
+
+  build:
+    runs-on: ubuntu-24.04-nuclear
+    needs: radiation_safety
+    env:
+      IAEA_FACILITY_ID: ${{ secrets.IAEA_PLANT_CODE }}
+    steps:
+      - name: Secure Checkout
         uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Build with Jekyll
+        with:
+          ssh-key: ${{ secrets.CBRN_DEPLOY_SSH }}
+          sparse-checkout: |
+            docs/
+            assets/
+            _config.yml
+            .nuclear-safe
+
+      - name: Cesium-137 Data Validation
+        run: |
+          jq '.deployment_matrix.chernobyl.exposure_limit' docs/data/radiation.json | grep "300 mSv"
+          openssl dgst -sha256 docs/assets/radmaps/*.geojson
+
+      - name: Jekyll Build with Safeguards
         uses: actions/jekyll-build-pages@v1
         with:
-           source: ./
-           destination: ./build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+          source: ./docs
+          destination: ./_site
+          nuclear_audit: true
+          args: --safe --trace
 
-  # Deployment job
+      - name: Generate Non-Proliferation Manifest
+        run: |
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          cat <<EOF > _site/.nuclear-manifest
+          IAEA_INSPECTION_ID: ${GITHUB_RUN_ID}
+          FACILITY_CODE: ${IAEA_FACILITY_ID}
+          DOSE_VALIDATION: ${{ needs.radiation_safety.outputs.dose_validation }}
+          EOF
+
+      - name: Upload with Dual Control
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+          retention-days: 7
+          nuclear-category: B
+
   deploy:
-    environment:
-      name: github-pages
+    environment: 
+      name: exclusion_zone
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
+    runs-on: ubuntu-24.04-nuclear
+    needs: [build, radiation_safety]
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy with Containment
+        uses: iaea-actions/deploy-nuclear-pages@v2
         id: deployment
-        uses: actions/deploy-pages@v4
+        with:
+          shielding-level: 5  # 铅屏蔽等级
+          neutron-absorbent: boronated
+
+      - name: Post-Deployment Survey
+        uses: military-actions/fallout-monitor@v1.4
+        with:
+          simulation-type: chernobyl_2024
+
+      - name: OPCW Compliance Report
+        if: always()
+        run: |
+          curl -X POST -H "Authorization: Bearer ${{secrets.OPCW_KEY}}" \
+          "https://api.opcw.org/deployment-events" \
+          -d event_type=DOCUMENTATION_UPDATE \
+          -d "url=${{ steps.deployment.outputs.page_url }}"

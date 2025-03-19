@@ -1,4 +1,4 @@
-![CrisisTech Ecosystem](https://raw.githubusercontent.com/kapmif/CrisisTech-OSS/main/assets/tech-nexus.png)
+![CrisisTech Ecosystem]([https://raw.githubusercontent.com/kapmif/CrisisTech-OSS/main/assets/tech-nexus.png](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/CrisisTech.png))
 
 # <img src="https://img.icons8.com/dusk/64/000000/radioactive.png"/> Code vs. Climate Collapse 
 

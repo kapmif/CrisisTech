@@ -1,6 +1,6 @@
 ![CrisisTech Ecosystem](https://pub-dfc21f91726d47c6a21daacdb34fec92.r2.dev/CrisisTech.png)
 
-# <img src="https://img.icons8.com/dusk/64/000000/radioactive.png"/> Code vs. Climate Collapse 
+# Code vs. Climate Collapse 
 
 **Open Engineering Alliance for Planetary Defense**  
 [![GitHub Stars](https://img.shields.io/github/stars/kapmif/CrisisTech-OSS?style=social)](https://github.com/kapmif/CrisisTech-OSS/stargazers)
@@ -14,7 +14,7 @@
 | KAM-80BGD        | MIL-STD-810H        | VX 6.9log           | Fukushima Simulator     |
 | CleanSweep XM1577| 22.7m³/min          | OECD/NEA Certified  | NATO STANAG 4632        |
 
-## :triangular_flag_on_post: 关键技术路径
+## :triangular_flag_on_post: Technical Roadmap
 ```mermaid
 graph TD
     A[Open Radiation Data] --> B{AI-Driven Response}

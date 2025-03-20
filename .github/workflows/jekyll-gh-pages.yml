@@ -1,4 +1,4 @@
-name: CBRN-Secure Jekyll Deployment
+name: CBRN-Hardened Jekyll Deployment
 
 on:
   push:
@@ -7,35 +7,79 @@ on:
       - 'docs/_posts/*.md'
       - 'assets/radiation_data/**'
   workflow_dispatch:
+    inputs:
+      emergency_override:
+        description: '核事件应急代码 (IAEA级别1-7)'
+        required: true
+        default: '0'
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read  # 新增核安全审计需求
 
 concurrency:
   group: "nuclear-pages-${{ github.ref }}"
   cancel-in-progress: true
 
+env:
+  RAD_LIMIT: "300 mSv"
+  AES256_KEY: ${{ secrets.NUCLEAR_ENCRYPTION_KEY }}
+
 jobs:
-  radiation_safety:
+  pre_deployment_checks:
+    name: Reactor Core Verification
     runs-on: ubuntu-24.04-nuclear
+    outputs:
+      containment_ready: ${{ steps.containment_check.outputs.valid }}
+    steps:
+      - name: Containment Vessel Integrity
+        uses: iaea-actions/reactor-integrity-scan@v3.2
+        with:
+          pressure-threshold: "15 MPa"
+          neutron-flux-limit: 3e19
+
+      - name: Boron Injection Test
+        id: containment_check
+        run: |
+          echo "BORON_CONCENTRATION=$(( RANDOM % 2000 + 3000 ))" >> $GITHUB_OUTPUT
+          openssl enc -aes-256-cbc -in docs/emergency_protocols.bin -out /dev/null -pass pass:$AES256_KEY
+
+  radiation_safety:
+    name: Radiological Control
+    runs-on: ubuntu-24.04-nuclear
+    needs: pre_deployment_checks
     outputs:
       dose_validation: ${{ steps.survey.outputs.dose_ok }}
     steps:
       - name: Background Radiation Survey
-        uses: iaea-actions/geiger-counter-scan@v2
+        uses: iaea-actions/geiger-counter-scan@v2.1
         with:
-          max_microsievert: 300  # 切尔诺贝利禁区标准
+          max_microsievert: 300
+          exclusion-zones: |
+            chernobyl,30km
+            fukushima,20km
         id: survey
 
+      - name: Neutron Flux Monitoring
+        if: ${{ needs.pre_deployment_checks.outputs.containment_ready != 'true' }}
+        uses: military-actions/neutron-flux-alert@v4
+        with:
+          shutdown-protocol: 'SCRAM-3'
+
   build:
+    name: Core Meltdown Build
     runs-on: ubuntu-24.04-nuclear
-    needs: radiation_safety
+    needs: [pre_deployment_checks, radiation_safety]
     env:
       IAEA_FACILITY_ID: ${{ secrets.IAEA_PLANT_CODE }}
+    strategy:
+      fail-fast: false
+      matrix:
+        safeguard_level: [5,7,9]
     steps:
-      - name: Secure Checkout
+      - name: Secure Checkout (Air-Gapped Mode)
         uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.CBRN_DEPLOY_SSH }}
@@ -44,59 +88,106 @@ jobs:
             assets/
             _config.yml
             .nuclear-safe
+          persist-credentials: false
 
-      - name: Cesium-137 Data Validation
+      - name: Data Enclave Initialization
+        uses: military-actions/secure-enclave-init@v1.3
+        with:
+          encryption-key: $AES256_KEY
+          memory-protection: 'SGX2'
+
+      - name: Radioisotope Validation
         run: |
-          jq '.deployment_matrix.chernobyl.exposure_limit' docs/data/radiation.json | grep "300 mSv"
-          openssl dgst -sha256 docs/assets/radmaps/*.geojson
+          # 多级同位素验证协议
+          jq -e '.deployment_matrix.chernobyl.exposure_limit == env.RAD_LIMIT' docs/data/radiation.json
+          sha256sum -c docs/checksums.sha256
+          openssl rsautl -verify -inkey public.pem -in docs/signatures.sig -pubin
 
-      - name: Jekyll Build with Safeguards
-        uses: actions/jekyll-build-pages@v1
+      - name: Jekyll Build with Containment
+        uses: iaea-actions/jekyll-nuclear-build@v2.4
         with:
           source: ./docs
           destination: ./_site
-          nuclear_audit: true
-          args: --safe --trace
+          safeguard_level: ${{ matrix.safeguard_level }}
+          args: |
+            --safe 
+            --trace
+            --config _config.yml,_nuclear.yml
+          neutron-shielding: 'boron-carbide'
 
-      - name: Generate Non-Proliferation Manifest
+      - name: Generate Safeguards Manifest
         run: |
-          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          timestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          openssl dgst -sha384 _site/**/*.html | awk '{print $2}' > manifest.sha384
+          gpg --batch --passphrase $AES256_KEY -c manifest.sha384
+
           cat <<EOF > _site/.nuclear-manifest
-          IAEA_INSPECTION_ID: ${GITHUB_RUN_ID}
-          FACILITY_CODE: ${IAEA_FACILITY_ID}
-          DOSE_VALIDATION: ${{ needs.radiation_safety.outputs.dose_validation }}
+          IAEA_INSPECTION_ID: ${GITHUB_RUN_ID}-${{ matrix.safeguard_level }}
+          FACILITY_CODE: $(echo $IAEA_FACILITY_ID | tr 'A-Za-z' 'N-ZA-Mn-za-m')
+          TIMESTAMP: $timestamp
+          CONTAINMENT_STATUS: ${{ needs.pre_deployment_checks.outputs.containment_ready }}
+          RADIATION_LEVEL: ${{ needs.radiation_safety.outputs.dose_validation }}
           EOF
 
-      - name: Upload with Dual Control
-        uses: actions/upload-pages-artifact@v3
+      - name: Secure Artifact Packaging
+        uses: military-actions/nuclear-artifact-packager@v2.1
         with:
-          path: ./_site
+          artifact-path: ./_site
+          shielding-type: 'lead-boron'
+          encryption-level: 'AES-256-GCM'
           retention-days: 7
-          nuclear-category: B
 
   deploy:
+    name: Reactor Deployment
     environment: 
       name: exclusion_zone
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-24.04-nuclear
     needs: [build, radiation_safety]
     steps:
-      - name: Deploy with Containment
-        uses: iaea-actions/deploy-nuclear-pages@v2
+      - name: Core Insertion Protocol
+        uses: iaea-actions/reactor-core-deployer@v3.6
         id: deployment
         with:
-          shielding-level: 5  # 铅屏蔽等级
-          neutron-absorbent: boronated
+          shielding-level: 7  # 硼化铅复合屏蔽
+          neutron-absorbent: 'boral'
+          emergency-cooling: ${{ github.event.inputs.emergency_override }}
 
-      - name: Post-Deployment Survey
-        uses: military-actions/fallout-monitor@v1.4
+      - name: Post-Deployment Neutron Scan
+        uses: military-actions/reactor-scan@v4.2
         with:
-          simulation-type: chernobyl_2024
+          scan-depth: 'full-core'
+          alert-threshold: 1e15
 
-      - name: OPCW Compliance Report
-        if: always()
-        run: |
-          curl -X POST -H "Authorization: Bearer ${{secrets.OPCW_KEY}}" \
-          "https://api.opcw.org/deployment-events" \
-          -d event_type=DOCUMENTATION_UPDATE \
-          -d "url=${{ steps.deployment.outputs.page_url }}"
+      - name: OPCW Compliance Documentation
+        uses: opcw-actions/chemical-weapons-report@v1.3
+        with:
+          api-key: ${{ secrets.OPCW_KEY }}
+          event-url: ${{ steps.deployment.outputs.page_url }}
+          verification-level: 3
+
+      - name: Fallout Simulation
+        if: ${{ failure() }}
+        uses: military-actions/fallout-simulation@v2.8
+        with:
+          scenario: 'worst-case'
+          radius: '50km'
+
+# 核应急协议部分
+emergency_procedures:
+  on:
+    workflow_run:
+      workflows: ["Nuclear Incident Response"]
+      types: [requested]
+  jobs:
+    scram_procedure:
+      runs-on: ubuntu-24.04-nuclear
+      steps:
+        - name: Emergency Core Shutdown
+          uses: iaea-actions/reactor-scram@v5
+          with:
+            shutdown-level: 9
+            boron-injection: 6500ppm
+
+        - name: Containment Seal Verification
+          uses: iaea-actions/containment-integrity-check@v2.1

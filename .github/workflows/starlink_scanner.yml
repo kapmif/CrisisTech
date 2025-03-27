@@ -1,0 +1,42 @@
+# .github/workflows/starlink_scanner.yml
+name: Starlink Repo Scanner
+
+on:
+  schedule:
+    - cron: '0 8 * * 1-5'  # 工作日每天早8点运行
+  workflow_dispatch:
+
+env:
+  SEARCH_QUERY: "starlink+wifi+sharing+language:python+stars:>10"
+  MAX_ISSUES: 5
+
+jobs:
+  scan-and-report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Run Scanner
+      env:
+        GITHUB_API_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: |
+        pip install requests python-dotenv
+        python fetch_repos.py
+        
+    - name: Commit Results
+      run: |
+        git config --global user.name "Automation Bot"
+        git config --global user.email "bot@crisistech.com"
+        git add .
+        git commit -m "Auto: Update Starlink repos"
+        git push

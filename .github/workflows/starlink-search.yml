@@ -1,0 +1,29 @@
+name: Starlink Repo Search
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # 每周一执行
+  workflow_dispatch:
+
+jobs:
+  search-and-log:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const result = await github.rest.search.repos({
+              q: 'starlink billing in:description',
+              sort: 'updated',
+              order: 'desc'
+            });
+            
+            result.data.items.forEach(async repo => {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `[Auto] Found: ${repo.full_name}`,
+                body: `**URL**: ${repo.html_url}\n**Stars**: ${repo.stargazers_count}\n**Description**: ${repo.description}`,
+                labels: ['starlink', 'auto-generated']
+              });
+            });
